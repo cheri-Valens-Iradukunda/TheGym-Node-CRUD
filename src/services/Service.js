@@ -1,9 +1,5 @@
 import fs from "fs/promises"
 
-export const TestForExpress = (req, res) => {
-    res.send("tested")
-}
-
 export const DisplayData = async (req, res) => {
     try {
         const data = await fetchData()
@@ -34,8 +30,9 @@ export const saveData = async (req,res) => {
 
 }
 
-export const UpdateData = async (req, res, id) => {
+export const UpdateData = async (req, res) => {
     try {
+        const { id } = req.params
         const reqBody = req.body
         let data = JSON.parse(await fetchData())
         let returnedData 
@@ -52,8 +49,9 @@ export const UpdateData = async (req, res, id) => {
 
 }
 
-export const DeleteData = async (res, id) => {
+export const DeleteData = async (req,res) => {
     try {
+        const { id } = req.params
         let data = JSON.parse(await fetchData())
         let returnedData = data.filter(elem=>elem.id == id)
         

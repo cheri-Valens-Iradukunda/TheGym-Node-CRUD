@@ -1,21 +1,11 @@
-import { DeleteData, DisplayData, saveData, TestForExpress, UpdateData } from "../services/Service.js"
+import express from "express";
+import { DeleteData, DisplayData, saveData, UpdateData } from "../services/Service.js"
 
-export const TestController = (req, res) => {
-    return TestForExpress(req, res)
-} 
+const router = express.Router()
 
-export const DisplayController = (req, res) => {
-    return DisplayData(req,res)
-}
+router.get("/",DisplayData)
+router.post("/", saveData)
+router.put("/:id",UpdateData)
+router.delete("/:id", DeleteData)
 
-export const SaveController = (req,res) => {
-    return saveData(req,res)
-}
-
-export const UpdateController = (req, res, id) => {
-    return UpdateData(req, res, id)
-}
-
-export const DeleteController = (res, id) => {
-    return DeleteData(res, id)
-}
+export default router
