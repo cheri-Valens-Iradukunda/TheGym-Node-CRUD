@@ -1,18 +1,6 @@
 import fs from "fs/promises"
 import type { Request, Response } from 'express'
-
-interface PropertyDataInterface {
-    id: number
-    name: string
-    price: number
-}
-
-interface bodyInterface extends Pick<PropertyDataInterface, "name" | "price">{}
-
-interface PropertyIdParams {
-    id: number
-}
-
+import { PropertyDataInterface,bodyInterface, PropertyIdParams } from "../dto/ValidationDto";
 const PropertyStorage = "Properties.json"
 
 export const DisplayProperties = async (_: Request, res:Response) => {
@@ -28,6 +16,7 @@ export const DisplayProperties = async (_: Request, res:Response) => {
 export const findPropertyById = async (req: Request<PropertyIdParams>, res: Response) => {
     try {
         const { id }: PropertyIdParams = req.params
+        if(!id ) res.status(404).send({error: "Id must be provided"})
         let data: PropertyDataInterface[] = await fetchProperty()
         res.send(data.find((elem: PropertyDataInterface) => elem.id == id))
     } catch (error) {
@@ -41,7 +30,7 @@ export const saveProperty = async (req: Request, res: Response): Promise<void> =
     try {
         const reqBody: bodyInterface = req.body
         
-        if(!reqBody.name && !reqBody.price) throw new Error("Error found")
+        if(!reqBody.name && !reqBody.price) throw new Error("name or price is not found")
     
         const properties: PropertyDataInterface[] = await fetchProperty()
 
@@ -65,7 +54,7 @@ export const UpdateProperty = async (req: Request<PropertyIdParams>, res: Respon
         const { id }: PropertyIdParams = req.params
         const reqBody:bodyInterface = req.body
         let data: PropertyDataInterface[] = await fetchProperty()
-        // let returnedData 
+        if(!id) res.status(404).send({error: "Id must be provided"})
         const newData: PropertyDataInterface[] = data.map((elem: PropertyDataInterface): PropertyDataInterface=>{
             if(elem.id == id) {
                 return { ...elem, ...reqBody }
@@ -85,6 +74,7 @@ export const UpdateProperty = async (req: Request<PropertyIdParams>, res: Respon
 export const DeleteProperty = async (req: Request<PropertyIdParams>, res: Response) => {
     try {
         const { id }: PropertyIdParams = req.params
+        if(!id) res.status(404).send({error: "Id must be provided"})
         let data: PropertyDataInterface[] = await fetchProperty()
         let returnedData: PropertyDataInterface[] = data.filter((elem: PropertyDataInterface) => elem.id == id)
         
